@@ -1,0 +1,164 @@
+Building Installer
+------------------
+
+Basically to set this up we do three things:
+
+ * Download mapnik-0.7.1 and unzip in this local directory
+ * Stick a bunch of other stuff into the directory structure created by unzipping
+ * Then install NSIS and run it to create an .exe installer
+  - Compile 'mapnik_nsis_script.nsi' into the standalone installer by right clicking on nsi
+
+Here is a unix shell script to setup the files:
+
+cd mapnik-win-setup
+# grab mapnik
+wget http://download.berlios.de/mapnik/mapnik-0.7.1-win32-py25_26.zip
+# unzip
+unzip mapnik-0.7.1-win32-py25_26.zip
+# above command creates the mapnik-0.7.1 directory which we stash all things in
+
+# get osm2pgsql
+wget http://tile.openstreetmap.org/osm2pgsql.zip
+# unzip
+unzip osm2pgsql.zip
+# copy to binary
+mv osm2pgsql/osm2pgsql.exe mapnik-0.7.1/bin/
+# copy the libs
+mv osm2pgsql/*dll mapnik-0.7.1/lib
+# create a data share dir
+mkdir mapnik-0.7.1/share
+mv osm2pgsql/*style mapnik-0.7.1/share
+mv osm2pgsql/*sql mapnik-0.7.1/share
+# cleanup
+rm -rf osm2pgsql
+
+# proj4
+wget http://download.osgeo.org/proj/proj446_win32_bin.zip
+# unzip
+unzip proj446_win32_bin.zip
+# place nad in dir that installer expects
+mv proj/nad/ mapnik-0.7.1/
+echo '# WGS 84 / Pseudo-Mercator' >> mapnik-0.7.1/nad/epsg
+echo '<3857> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs <>' >> mapnik-0.7.1/nad/epsg
+echo '# Google Mercator (basically the same as 3857) but with +over added' >> mapnik-0.7.1/nad/epsg
+echo '<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over <>' >> mapnik-0.7.1/nad/epsg
+# cleanup
+rm -rf proj
+
+# cascadenik and deps
+wget http://pypi.python.org/packages/source/c/cascadenik/cascadenik-0.1.0.tar.gz#md5=efe51497e4757977516958e409e70c53
+tar xvf cascadenik-0.1.0.tar.gz
+mv cascadenik-0.1.0/cascadenik-*
+mv cascadenik-0.1.0/cascadenik-* mapnik-0.7.1/bin/
+# note, no trailing slash on source 'cascadenik-0.1.0/cascadenik' folder
+cp -R cascadenik-0.1.0/cascadenik mapnik-0.7.1/python/2.5/site-packages/
+cp -R cascadenik-0.1.0/cascadenik mapnik-0.7.1/python/2.6/site-packages/
+rm -rf cascadenik-0.1.0
+
+wget http://pypi.python.org/packages/source/c/cssutils/cssutils-0.9.7b3.zip#md5=4539c061bb03612cc3a0e278c44e8f96
+unzip cssutils-0.9.7b3.zip
+cp -R cssutils-0.9.7b3/src/cssutils mapnik-0.7.1/python/2.5/site-packages/
+cp -R cssutils-0.9.7b3/src/encutils mapnik-0.7.1/python/2.5/site-packages/
+cp -R cssutils-0.9.7b3/src/cssutils mapnik-0.7.1/python/2.6/site-packages/
+cp -R cssutils-0.9.7b3/src/encutils mapnik-0.7.1/python/2.6/site-packages/
+rm -rf cssutils-0.9.7b3
+
+# can't believe this works on osx!
+wget http://effbot.org/downloads/PIL-1.1.7.win32-py2.5.exe
+unzip -L PIL-1.1.7.win32-py2.5.exe -d PIL25
+mv PIL25/platlib/pil* mapnik-0.7.1/python/2.5/site-packages/
+# copy py25 scripts
+mv PIL25/scripts/pilconvert.py mapnik-0.7.1/bin/pilconvert25.py
+mv PIL25/scripts/pildriver.py mapnik-0.7.1/bin/pildriver25.py
+mv PIL25/scripts/pilfile.py mapnik-0.7.1/bin/pilfile25.py
+mv PIL25/scripts/pilfont.py mapnik-0.7.1/bin/pilfont25.py
+mv PIL25/scripts/pilprint.py mapnik-0.7.1/bin/pilprint25.py
+rm -rf PIL25
+
+wget http://effbot.org/downloads/PIL-1.1.7.win32-py2.6.exe
+unzip -L PIL-1.1.7.win32-py2.5.exe -d PIL26
+mv PIL26/platlib/pil* mapnik-0.7.1/python/2.6/site-packages/
+# copy py26 scripts
+mv PIL26/scripts/pilconvert.py mapnik-0.7.1/bin/pilconvert26.py
+mv PIL26/scripts/pildriver.py mapnik-0.7.1/bin/pildriver26.py
+mv PIL26/scripts/pilfile.py mapnik-0.7.1/bin/pilfile26.py
+mv PIL26/scripts/pilfont.py mapnik-0.7.1/bin/pilfont26.py
+mv PIL26/scripts/pilprint.py mapnik-0.7.1/bin/pilprint26.py
+rm -rf PIL26
+
+# lxml
+# py25
+wget http://pypi.python.org/packages/2.5/l/lxml/lxml-2.2.6.win32-py2.5.exe#md5=5824f195b457bb8b613d0369a54ccc70
+unzip -L lxml-2.2.6.win32-py2.5.exe -d lxml25
+mv lxml25/platlib/lxml mapnik-0.7.1/python/2.5/site-packages/
+rm -rf xml25
+
+#py26
+wget http://pypi.python.org/packages/2.6/l/lxml/lxml-2.2.8.win32-py2.6.exe#md5=18a7e134fc6eeda498068ece7f1656ef
+unzip -L lxml-2.2.8.win32-py2.6.exe -d lxml26
+mv lxml26/platlib/lxml mapnik-0.7.1/python/2.6/site-packages/
+rm -rf xml26
+
+# nik2img
+svn co http://mapnik-utils.googlecode.com/svn/trunk/nik2img/ nik2img-svn
+cp -R nik2img-svn/mapnik_utils mapnik-0.7.1/python/2.5/site-packages/
+cp -R nik2img-svn/mapnik_utils mapnik-0.7.1/python/2.6/site-packages/
+mv nik2img-svn/nik2img.py mapnik-0.7.1/bin/
+rm -rf nik2img-svn
+
+# tilelite
+hg clone http://bitbucket.org/springmeyer/tilelite
+cp tilelite/liteserv.py mapnik-0.7.1/bin/
+cp tilelite/tilelite.py mapnik-0.7.1/python/2.5/site-packages/
+cp tilelite/tilelite.py mapnik-0.7.1/python/2.6/site-packages/
+rm -rf tilelite
+
+# werzeug - better wsgi server for tilelite
+wget http://pypi.python.org/packages/source/W/Werkzeug/Werkzeug-0.6.2.tar.gz
+tar xvf Werkzeug-0.6.2.tar.gz
+cp -R Werkzeug-0.6.2/werkzeug mapnik-0.7.1/python/2.5/site-packages/
+cp -R Werkzeug-0.6.2/werkzeug mapnik-0.7.1/python/2.6/site-packages/
+rm -rf Werkzeug-0.6.2
+
+# cleanup all svn data
+cd mapnik-0.7.1
+find . -name '.svn' -exec rm -rf {} \;
+cd ../
+
+# zip the whole thing up again, as we need to do the final packaging on Windoze
+zip -9vr mapnik-stack-0.7.1.zip mapnik-0.7.1/
+
+# then on windoze....
+1) download http://bitbucket.org/springmeyer/mapnik-win-setup/get/tip.zip
+
+2) unzip it, creating a 'mapnik-win-setup' folder
+
+3) unzip the mapnik-stack-0.7.1.zip inside resulting directory
+
+4) install nsis from http://iweb.dl.sourceforge.net/project/nsis/NSIS%202/2.46/nsis-2.46-setup.exe
+
+5) right click the 'mapnik_nsis_script' and choose "Compile NSIS Script" (this menu option requires nsis being installed)
+
+6) test things work...
+
+Start > Run > CMD
+
+# mapnik
+$ python
+import mapnik
+mapnik.Projection('+init=espg:900913')
+import mapnik-utils
+import tilelite
+import cascadenik
+import werkzeug
+import PIL
+import PIL.Image # import Image will not work
+import cssutils
+import encutils
+
+# osm2pgsql
+osm2pgsql # should get usage
+
+# command line tools (should all get usage)
+cascadenik-compile.py
+nik2img.py
