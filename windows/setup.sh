@@ -12,9 +12,11 @@ wget http://download.berlios.de/mapnik/mapnik-$VER-win32-py25_26.zip
 # unzip
 unzip mapnik-$VER-win32-py25_26.zip
 mv mapnik-$VER-win32-py25_26.zip $DOWNLOADS/
-# above command creates the $TARGET directory which we stash all things in
+# the above command creates the $TARGET directory which we stash all things in
+# but lets make it a more generic name than 'mapnik-0.7.1'
+mv mapnik-0.7.1 hotosm
 cd $DOWNLOADS
-TARGET="../mapnik-0.7.1"
+TARGET="../hotosm"
 
 
 # get osm2pgsql

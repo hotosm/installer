@@ -15,7 +15,24 @@ Goals
 
 The idea here is a one-shot, kitchen-sink approach to make it as
 easy as possible for getting a variety of tools running that are
-not otherwise available as easy to use windows installers.
+*not otherwise* available as easy to use windows installers.
+
+The tools packaged so far are mainly python stuff because Dane Springmeyer,
+who deployed with HOT on mission 2, knows python and tends to solve
+problems this way. But, one idea behind making this installer public 
+is to allow others to recommend tools that might be useful if stuck
+into this thingy.
+
+
+
+Origins
+=======
+
+This started as a standalone Mapnik installer, which is the reason the
+'setup.sh' script builds off of the base directory structure from the 
+Mapnik windows download. But the longer term goal is to abstract
+this out and provide a more generic base to throw in more tools.
+
 
 
 Why not OSGEO4W?
@@ -25,7 +42,7 @@ This installer is an alternative to using OSGEO4W, which is a great tool
 but has certain drawbacks for rapid deployment of tools in the field:
 
 1) OSGEO4W is non-trivial to get working fully-offine (from a usb stick).
-1) OSGEO4W is not less than "one-click" and requires some explanation to use.
+2) OSGEO4W is less than "one-click" and requires some explanation to use.
 3) OSGEO4W requires a high level of skill to add new packages to.
 
 

@@ -1,0 +1,8 @@
+Add more to the kitchen sink:
+
+Mkgmap
+osmosis
+wget
+bzip2
+pbf2osm
+sample data
