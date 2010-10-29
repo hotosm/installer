@@ -1,7 +1,14 @@
 Building Installer
 ------------------
 
-Basically to construct the windows installer:
+The below is my approach to putting this installer together.
+
+The general idea is to run some stuff on mac osx/linux, then finish on windows.
+
+But it could all be done on windows if you have various unix commands 
+installed like tar, unzip, wget, svn, and hg.
+
+Here are my steps:
 
 On *unix:
 
@@ -14,9 +21,9 @@ On *unix:
   
   ./setup.sh
   
-3) Package up the 'mapnik-0.7.1' directory to ship over to a windows machine
+3) Package up the resulting 'hotosm' directory to ship over to a windows machine
 
-  zip -9vr hot-installer.zip mapnik-0.7.1/
+  zip -9vr hot-raw-pkgs.zip hotosm/
 
 Then on Windows:
 
@@ -27,12 +34,15 @@ Then on Windows:
 5) Download the installer onto windows:
 
   http://github.com/hotosm/installer/zipball/master
-  
-6) Then navigate into the 'window' directory and right-click on the 'nsis_script.nsi'
+
+6) Then download the 'hot-raw-pkgs.zip' onto windows and unzip into the 'windows' directory
+
+7) Then navigate into the 'window' directory and right-click on the 'nsis_script.nsi'
 
   Choose "Compile NSIS Script" (this menu option requires nsis being installed)
+  This should create a 'HOTOSM_Installer.exe' in this directory.
 
-7) Test things work...
+8) After running the installer (and rebooting), then test things work...
 
 Start > Run > CMD
 

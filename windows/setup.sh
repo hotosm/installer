@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# stop on error
+set -e
+
 # make a directory for downloads
 
 DOWNLOADS=downloads
@@ -36,11 +39,10 @@ mv osm2pgsql/*sql $TARGET/share
 rm -rf osm2pgsql
 
 # proj4
-VER=446
-echo 'downloading proj4... '$VER
-wget http://download.osgeo.org/proj/proj$VER_win32_bin.zip
+echo 'downloading proj4... '446
+wget http://download.osgeo.org/proj/proj446_win32_bin.zip
 # unzip
-unzip proj$VER_win32_bin.zip
+unzip proj446_win32_bin.zip
 # place nad in dir that installer expects
 mv proj/nad/ $TARGET/
 echo '# WGS 84 / Pseudo-Mercator' >> $TARGET/nad/epsg
