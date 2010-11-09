@@ -24,6 +24,8 @@ On *unix:
 3) Package up the resulting 'hotosm' directory to ship over to a windows machine
 
   zip -9vr hot-raw-pkgs.zip hotosm/
+  git ci hot-raw-pkgs.zip -m "updating package of sources"
+  git push origin master
 
 Then on Windows:
 

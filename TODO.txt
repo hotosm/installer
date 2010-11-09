@@ -1,8 +1,8 @@
 Add more to the kitchen sink:
+ * pbf2osm
+ * sample data
+ * git
+ * zipfile of other installers like QGIS, python, postgres
 
-Mkgmap
-osmosis
-wget
-bzip2
-pbf2osm
-sample data
+Clear out unneeded things from the mapnik sources
+ * tests/data

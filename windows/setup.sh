@@ -1,17 +1,24 @@
 #!/bin/sh
 
-# stop on error
+# Shell script to automatically collect and repackage
+# various software into a single directory structure
+# Run this on linux or mac osx, and then push the resulting
+# directory to windows to build actual NSIS installer
+
+# See TODO.txt for ideas about further apps to package
+
+# go..... but stop on error
 set -e
 
 # make a directory for downloads
-
 DOWNLOADS=downloads
 mkdir $DOWNLOADS
 
 # grab mapnik
 VER=0.7.1
 echo 'downloading mapnik... '$VER
-wget http://download.berlios.de/mapnik/mapnik-$VER-win32-py25_26.zip
+#wget http://download.berlios.de/mapnik/mapnik-$VER-win32-py25_26.zip
+wget http://media.mapnik.org/mapnik-0.7.1-win32-py25_26.zip
 # unzip
 unzip mapnik-$VER-win32-py25_26.zip
 mv mapnik-$VER-win32-py25_26.zip $DOWNLOADS/
@@ -21,6 +28,51 @@ mv mapnik-0.7.1 hotosm
 cd $DOWNLOADS
 TARGET="../hotosm"
 
+# FIX paths for mapnik python bindings to find fonts and plugins
+# py25
+MAPNIK_PATHS_FILE=$TARGET/python/2.5/site-packages/mapnik/paths.py
+rm $MAPNIK_PATHS_FILE
+echo "import os;inputpluginspath = os.path.realpath('../../../../lib/mapnik/input');fontscollectionpath = os.path.realpath('../../../../lib/mapnik/fonts')" > $MAPNIK_PATHS_FILE
+# py26
+MAPNIK_PATHS_FILE=$TARGET/python/2.6/site-packages/mapnik/paths.py
+rm $MAPNIK_PATHS_FILE
+echo "import os;inputpluginspath = os.path.realpath('../../../../lib/mapnik/input');fontscollectionpath = os.path.realpath('../../../../lib/mapnik/fonts')" > $MAPNIK_PATHS_FILE
+
+# osmosis
+# NOTE: osmosis is also bundled with the "OSM Tools" plugin for QGIS
+# which is available at http://qgis.dbsgeo.com
+# This bundled version of osmosis has been reorganized in a custom way
+# so that it works when called via python's subprocess module
+wget http://dev.openstreetmap.org/~bretth/osmosis-build/osmosis-latest.zip
+unzip osmosis-latest.zip
+# osmosis is a mess to work with, just copy the whole thing into a custom location
+# setup.bat looks for:
+# %PROGRAMFILES%\HOTOSM\osmosis\bin
+mkdir $TARGET/osmosis
+mv osmosis-0.37/* $TARGET/osmosis/
+
+# mkgmap
+# http://wiki.openstreetmap.org/wiki/Mkgmap#Downloading
+wget http://www.mkgmap.org.uk/snapshots/mkgmap-r1625.tar.gz
+tar xvf mkgmap-r1625.tar.gz
+mv mkgmap-r1625/mkgmap.jar $TARGET/bin/
+rm -rf mkgmap-r1625
+
+# wget
+wget http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-bin.zip
+unzip wget-1.11.4-1-bin.zip -d wget
+mv wget/bin/*exe $TARGET/bin/
+rm -rf wget
+
+# bzip2
+#wget http://gnuwin32.sourceforge.net/downlinks/bzip2-bin-zip.php
+wget http://surfnet.dl.sourceforge.net/project/gnuwin32/bzip2/1.0.5/bzip2-1.0.5-bin.zip
+unzip bzip2-1.0.5-bin.zip -d bzip2
+mv bzip2/bin/*exe $TARGET/bin/
+# osm2pgsql later copies a bz2-1.dll otherwise
+# this could potentially cause linking trouble
+mv bzip2/lib/* $TARGET/lib/
+rm -rf bzip2
 
 # get osm2pgsql
 echo 'downloading osm2pgsql..'
@@ -74,7 +126,10 @@ cp -R cssutils-$VER/src/cssutils $TARGET/python/2.6/site-packages/
 cp -R cssutils-$VER/src/encutils $TARGET/python/2.6/site-packages/
 rm -rf cssutils-$VER
 
-# can't believe this works on osx!
+# momentarily disable strict stop-on-error behavior
+# as during "unzip" of these supposed .exe files on osx
+# something minor does fail
+set +e
 VER=1.1.7
 echo 'downloading python imaging library..'$VER
 wget http://effbot.org/downloads/PIL-$VER.win32-py2.5.exe
@@ -116,6 +171,9 @@ unzip -L lxml-2.2.8.win32-py2.6.exe -d lxml26
 mv lxml26/platlib/lxml $TARGET/python/2.6/site-packages/
 rm -rf xml26
 
+# renable stop on error
+set -e
+
 # nik2img
 echo 'downloading nik2img trunk..'
 svn co http://mapnik-utils.googlecode.com/svn/trunk/nik2img/ nik2img-svn
@@ -133,13 +191,15 @@ cp tilelite/tilelite.py $TARGET/python/2.6/site-packages/
 rm -rf tilelite
 
 # werzeug - better wsgi server for tilelite
-VER=0.6.2
-echo 'downloading werkzeug (for tilelite)..'$VER
-wget http://pypi.python.org/packages/source/W/Werkzeug/Werkzeug-$VER.tar.gz
-tar xvf Werkzeug-$VER.tar.gz
-cp -R Werkzeug-$VER/werkzeug $TARGET/python/2.5/site-packages/
-cp -R Werkzeug-$VER/werkzeug $TARGET/python/2.6/site-packages/
-rm -rf Werkzeug-$VER
+# nevermind on this one, bugs in os.wait in python can
+# cause problems with the werzeug server...
+#VER=0.6.2
+#echo 'downloading werkzeug (for tilelite)..'$VER
+#wget http://pypi.python.org/packages/source/W/Werkzeug/Werkzeug-$VER.tar.gz
+#tar xvf Werkzeug-$VER.tar.gz
+#cp -R Werkzeug-$VER/werkzeug $TARGET/python/2.5/site-packages/
+#cp -R Werkzeug-$VER/werkzeug $TARGET/python/2.6/site-packages/
+#rm -rf Werkzeug-$VER
 
 # cleanup all svn data
 cd $TARGET
