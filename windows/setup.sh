@@ -32,11 +32,11 @@ TARGET="../hotosm"
 # py25
 MAPNIK_PATHS_FILE=$TARGET/python/2.5/site-packages/mapnik/paths.py
 rm $MAPNIK_PATHS_FILE
-echo "import os;inputpluginspath = os.path.realpath('../../../../lib/mapnik/input');fontscollectionpath = os.path.realpath('../../../../lib/mapnik/fonts')" > $MAPNIK_PATHS_FILE
+echo "import os;here = os.path.dirname(__file__);inputpluginspath = os.path.normpath(os.path.join(here,'../../../../lib/mapnik/input'));fontscollectionpath = os.path.normpath(os.path.join(here,'../../../../lib/mapnik/fonts'));" > $MAPNIK_PATHS_FILE
 # py26
 MAPNIK_PATHS_FILE=$TARGET/python/2.6/site-packages/mapnik/paths.py
 rm $MAPNIK_PATHS_FILE
-echo "import os;inputpluginspath = os.path.realpath('../../../../lib/mapnik/input');fontscollectionpath = os.path.realpath('../../../../lib/mapnik/fonts')" > $MAPNIK_PATHS_FILE
+echo "import os;here = os.path.dirname(__file__);inputpluginspath = os.path.normpath(os.path.join(here,'../../../../lib/mapnik/input'));fontscollectionpath = os.path.normpath(os.path.join(here,'../../../../lib/mapnik/fonts'));" > $MAPNIK_PATHS_FILE
 
 # osmosis
 # NOTE: osmosis is also bundled with the "OSM Tools" plugin for QGIS
@@ -48,13 +48,15 @@ unzip osmosis-latest.zip
 mv osmosis-0.37/bin/* $TARGET/bin/
 mv osmosis-0.37/config $TARGET/
 mv osmosis-0.37/lib/* $TARGET/lib/
-
+rm -rf mv osmosis-0.37/
 
 # mkgmap
 # http://wiki.openstreetmap.org/wiki/Mkgmap#Downloading
 wget http://www.mkgmap.org.uk/snapshots/mkgmap-r1625.tar.gz
 tar xvf mkgmap-r1625.tar.gz
 mv mkgmap-r1625/mkgmap.jar $TARGET/bin/
+# TODO - do we need to strip line?
+echo 'java -Xmx512M -ea -jar "%~dp0\mkgmap.jar" %*'> $TARGET/bin/mkgmap.bat
 rm -rf mkgmap-r1625
 
 # wget
@@ -111,7 +113,6 @@ VER=0.1.0
 echo 'downloading cascadenik..'$VER
 wget http://pypi.python.org/packages/source/c/cascadenik/cascadenik-$VER.tar.gz#md5=efe51497e4757977516958e409e70c53
 tar xvf cascadenik-$VER.tar.gz
-mv cascadenik-$VER/cascadenik-*
 mv cascadenik-$VER/cascadenik-* $TARGET/bin/
 # note, no trailing slash on source 'cascadenik-0.1.0/cascadenik' folder
 cp -R cascadenik-$VER/cascadenik $TARGET/python/2.5/site-packages/
@@ -164,7 +165,7 @@ echo 'downloading lxml (for python 25)..'$VER
 wget http://pypi.python.org/packages/2.5/l/lxml/lxml-$VER.win32-py2.5.exe#md5=5824f195b457bb8b613d0369a54ccc70
 unzip -L lxml-2.2.6.win32-py2.5.exe -d lxml25
 mv lxml25/platlib/lxml $TARGET/python/2.5/site-packages/
-rm -rf xml25
+rm -rf lxml25
 
 #py26
 VER=2.2.8
@@ -172,7 +173,7 @@ echo 'downloading lxml (for python26)..'$VER
 wget http://pypi.python.org/packages/2.6/l/lxml/lxml-$VER.win32-py2.6.exe#md5=18a7e134fc6eeda498068ece7f1656ef
 unzip -L lxml-2.2.8.win32-py2.6.exe -d lxml26
 mv lxml26/platlib/lxml $TARGET/python/2.6/site-packages/
-rm -rf xml26
+rm -rf lxml26
 
 # renable stop on error
 set -e

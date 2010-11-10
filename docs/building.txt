@@ -39,7 +39,11 @@ Then on Windows:
 
 6) Then download the 'hot-raw-pkgs.zip' onto windows and unzip into the 'windows' directory
 
-7) Then navigate into the 'window' directory and right-click on the 'nsis_script.nsi'
+7) Open up the nad/epsg file in a text editor and strip off the last blank line.
+
+  This enables osm2pgsql to import data in longlat and Mapnik to create projections with +init syntax.
+  
+8) Then navigate into the 'window' directory and right-click on the 'nsis_script.nsi'
 
   Choose "Compile NSIS Script" (this menu option requires nsis being installed)
   This should create a 'HOTOSM_Installer.exe' in this directory.
@@ -52,12 +56,13 @@ Start > Run > CMD
 $ python
 import mapnik
 mapnik.Projection('+init=espg:900913')
-import mapnik-utils
+import mapnik_utils
 import tilelite
 import cascadenik
 import lxml
 import PIL
-import PIL.Image # import Image will not work
+# import Image will not work
+#import PIL.Image
 import cssutils
 import encutils
 
