@@ -45,11 +45,10 @@ echo "import os;inputpluginspath = os.path.realpath('../../../../lib/mapnik/inpu
 # so that it works when called via python's subprocess module
 wget http://dev.openstreetmap.org/~bretth/osmosis-build/osmosis-latest.zip
 unzip osmosis-latest.zip
-# osmosis is a mess to work with, just copy the whole thing into a custom location
-# setup.bat looks for:
-# %PROGRAMFILES%\HOTOSM\osmosis\bin
-mkdir $TARGET/osmosis
-mv osmosis-0.37/* $TARGET/osmosis/
+mv osmosis-0.37/bin/* $TARGET/bin/
+mv osmosis-0.37/config $TARGET/
+mv osmosis-0.37/lib/* $TARGET/lib/
+
 
 # mkgmap
 # http://wiki.openstreetmap.org/wiki/Mkgmap#Downloading
@@ -101,6 +100,9 @@ echo '# WGS 84 / Pseudo-Mercator' >> $TARGET/nad/epsg
 echo '<3857> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs <>' >> $TARGET/nad/epsg
 echo '# Google Mercator (basically the same as 3857) but with +over added' >> $TARGET/nad/epsg
 echo '<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over <>' >> $TARGET/nad/epsg
+# fix up line endings
+tr -d '\r' < $TARGET/nad/epsg > $TARGET/nad/epsg2
+mv $TARGET/nad/epsg2 $TARGET/nad/epsg
 # cleanup
 rm -rf proj
 
@@ -134,7 +136,8 @@ VER=1.1.7
 echo 'downloading python imaging library..'$VER
 wget http://effbot.org/downloads/PIL-$VER.win32-py2.5.exe
 unzip -L PIL-$VER.win32-py2.5.exe -d PIL25
-mv PIL25/platlib/pil* $TARGET/python/2.5/site-packages/
+# TODO, make sure PIL folder is upper case and don't rely on the .pth
+mv PIL25/platlib/pil $TARGET/python/2.5/site-packages/PIL
 # copy py25 scripts
 mv PIL25/scripts/pilconvert.py $TARGET/bin/pilconvert25.py
 mv PIL25/scripts/pildriver.py $TARGET/bin/pildriver25.py

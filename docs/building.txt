@@ -55,7 +55,7 @@ mapnik.Projection('+init=espg:900913')
 import mapnik-utils
 import tilelite
 import cascadenik
-import werkzeug
+import lxml
 import PIL
 import PIL.Image # import Image will not work
 import cssutils

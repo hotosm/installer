@@ -1,3 +1,7 @@
+Consider trying to detect previous installations and remove them...
+
+Revise the QGIS/PostGIS guide with new link to "HOTOSM" installer rather than Mapnik installer
+
 Add more to the kitchen sink:
  * pbf2osm
  * sample data
@@ -6,3 +10,4 @@ Add more to the kitchen sink:
 
 Clear out unneeded things from the mapnik sources
  * tests/data
+ * headers

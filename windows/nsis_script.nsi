@@ -63,6 +63,7 @@ Section "MainSection" SEC01
   File /r HOTOSM\docs
   File /r HOTOSM\include
   File /r HOTOSM\share
+  File /r HOTOSM\config
   ;; Setup and un-install scripts.  Execute setup now.
   File "setup.bat"
   ExecWait '"$INSTDIR\setup.bat"'
