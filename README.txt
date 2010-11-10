@@ -36,7 +36,6 @@ is to allow others to recommend tools that might be useful if stuck
 into this thingy.
 
 
-
 Origins
 =======
 
@@ -66,6 +65,9 @@ are not provided in this installer are:
  * JOSM / Java runtime
  * GPSBabel
  * Garmin Drivers
+ * QGIS
+ * Postgres/PostGIS
+ * Python 2.5
  
 This installer currently includes:
 
@@ -80,4 +82,8 @@ This installer currently includes:
  * cssutils
  * nik2img
  * TileLite
+ * osmosis 1.37
+ * mkgmap r1625
+ * bzip2
+ * wget
  * See the TODO.txt for further tools we plan to consider packaging
